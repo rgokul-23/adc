@@ -1,0 +1,47 @@
+clc;clear all; close all;           
+Am = 5;
+fm = 4;
+fs = 250;
+
+Tm = 1/fs;
+t = 0: Tm : 1;
+Ym = Am*cos(2*pi*fm*t); %% msg signal
+subplot(3,1,1);
+plot(Ym);
+title("Message Signal");
+xlabel("Time (sec)");
+ylabel("Amplitude");
+
+% DELTA MODULATION
+l = length(Ym);
+delta = 0.8;
+Yn=0;       
+for i=1:l
+if Ym(i)>Yn(i)
+d(i)=1;
+Yn(i+1) = Yn(i) + delta;
+else
+d(i)=0; 
+Yn(i+1) = Yn(i) - delta;
+end
+end
+subplot(3,1,2);
+stairs(Yn);     
+title("Delta Modulated Signal");
+xlabel("Time (sec)");
+ylabel("Amplitude");
+%DEMODULATION
+Yr=0;
+for i = 1 :length(d)
+if d(i)==1
+Yr(i+1) = Yr(i) + delta;
+else
+Yr(i+1) = Yr(i) - delta;
+end
+end
+
+subplot(3,1,3);
+plot(Yr);     
+title("DeModulated Signal");
+xlabel("Time (sec)");
+ylabel("Amplitude");

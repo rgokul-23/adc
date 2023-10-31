@@ -1,0 +1,107 @@
+clc, clear all, close all;
+x = randi([0,1],1,1000);
+N = length(x); T = 0.0001;
+nk = 100; uni_nrz=[];uni_rz=[];pol_nrz=[];pol_rz=[];man=[];
+
+%---------------------------UNIPOLAR NRZ--------------------------------%
+for n = 1:1:N
+if (x(n)==1)
+sig = ones(1,nk);
+elseif (x(n)==0)
+sig = zeros(1,nk);
+end
+uni_nrz=[uni_nrz sig];
+end
+%----------------------------UNIPOLAR RZ--------------------------------%
+for i = 0:N-1
+if x(i+1) == 1
+uni_rz(i*nk+1:(i+0.5)*nk) = 1;
+uni_rz((i+0.5)*nk+1:(i+1)*nk) = 0;
+else
+uni_rz(i*nk+1:(i+1)*nk) = 0;
+end
+end
+%----------------------------POLAR NRZ----------------------------------%
+for n = 1:1:N
+if (x(n)==1)
+sig = ones(1,nk);
+elseif (x(n)==0)
+sig = zeros(1,nk)-1;
+end
+pol_nrz =[pol_nrz sig];
+end
+%----------------------------POLAR RZ-----------------------------%
+for i = 0:N-1
+if x(i+1) == 1
+pol_rz(i*nk+1:(i+0.5)*nk) = 1;
+pol_rz((i+0.5)*nk+1:(i+1)*nk) = 0;
+else
+pol_rz(i*nk+1:(i+0.5)*nk) = -1;
+pol_rz((i+0.5)*nk+1:(i+1)*nk) = 0;
+end
+end
+%----------------------------MANCHESTER-------------------------------%
+for i = 0:N-1
+if x(i+1) == 1
+man(i*nk+1:(i+0.5)*nk) = 1;
+man((i+0.5)*nk+1:(i+1)*nk) = -1;
+else
+man(i*nk+1:(i+0.5)*nk) = -1;
+man((i+0.5)*nk+1:(i+1)*nk) = 1;
+end
+end
+%--------------------------------------------------------------------%
+ns = max(size(uni_nrz));
+na = 16;
+w = hanning(floor(ns/na));
+t1 =T/nk:T/nk:N*T;
+
+subplot(1,2,1);
+plot(t1,uni_nrz);ylim([-2 2]);xlim([0 20*(0.0001)]);
+xlabel('Time(Sec)');ylabel('Amplitude(Volts)');title('UNIPOLAR NRZ');
+subplot(1,2,2);
+plot(t1,uni_rz);ylim([-2 2]);xlim([0 20*(0.0001)]);
+xlabel('Time(Sec)');ylabel('Amplitude(Volts)');title('UNIPOLAR RZ');
+figure
+subplot(1,2,1);
+plot(t1,pol_nrz);ylim([-2 2]);xlim([0 20*(0.0001)]);
+xlabel('Time(Sec)');ylabel('Amplitude(Volts)');title('POLAR NRZ');
+subplot(1,2,2);
+plot(t1,pol_rz);ylim([-2 2]);xlim([0 20*(0.0001)]);
+xlabel('Time(Sec)');ylabel('Amplitude(Volts)');title('POLAR RZ');
+figure
+plot(t1,man);ylim([-2 2]);xlim([0 20*(0.0001)]);
+xlabel('Time(Sec)');ylabel('Amplitude(Volts)');title('MANCHESTER');
+
+%-------------------------------------------------------------------%
+[px1,f1] = pwelch(uni_nrz,w,[],[],1,'onesided');
+[px2,f2] = pwelch(uni_rz,w,[],[],1,'onesided');
+[px3,f3] = pwelch(pol_nrz,w,[],[],1,'onesided');
+[px4,f4] = pwelch(pol_rz,w,[],[],1,'onesided');
+[px5,f5] = pwelch(man,w,[],[],1,'onesided');
+
+figure
+subplot(1,2,1);
+semilogy(f1,px1,'DisplayName','Unipolar-NRZ');xlim([0 0.1]);
+ylabel("Power(dB)");xlabel("Normalized Frequency(Hz)");
+title("PSD OF Unipolar NRZ");
+subplot(1,2,2);
+semilogy(f2,px2,'DisplayName','Unipolar-RZ');
+xlim([0 0.1]);
+ylabel("Power(dB)");xlabel("Normalized Frequency(Hz)");
+title("PSD OF Unipolar RZ");
+
+figure
+subplot(1,2,1);
+semilogy(f3,px3,'DisplayName','Polar-NRZ');xlim([0 0.1]);
+ylabel("Power(dB)");xlabel("Normalized Frequency(Hz)");
+title("PSD OF Polar NRZ");
+subplot(1,2,2);
+semilogy(f4,px4,'DisplayName','Polar RZ');xlim([0 0.1]);
+ylabel("Power(dB)");xlabel("Normalized Frequency(Hz)");
+title("PSD OF Polar RZ");
+
+figure
+semilogy(f5,px5,'DisplayName','Manchester');xlim([0 0.1]);
+ylabel("Power(dB)");xlabel("Normalized Frequency(Hz)");
+title("PSD OF Manchester");

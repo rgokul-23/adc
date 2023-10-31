@@ -1,0 +1,67 @@
+clc;clear all;close all;
+uni_nrz=[];uni_rz=[];pol_nrz=[];pol_rz=[];man=[];bi_pol=[];
+
+%---------------------------UNIPOLAR NRZ--------------------------------%
+for i=1:l
+    if (m(i)==1)
+        uni_nrz=[uni_nrz ones(1,n)];
+    else
+        uni_nrz=[uni_nrz zeros(1,n)];
+    end
+end
+%-----------------------------UNIPOLAR RZ--------------------------------%
+for i=1:l
+    if (m(i)==1)
+        uni_rz=[uni_rz ones(1,n/2)];
+        uni_rz=[uni_rz zeros(1,n/2)];
+    else
+        uni_rz=[uni_rz zeros(1,n/2)];
+        uni_rz=[uni_rz zeros(1,n/2)];
+    end
+end
+%----------------------------POLAR NRZ----------------------------------%
+
+for i=1:l
+    if (m(i)==1)
+        pol_nrz=[pol_nrz ones(1,n)];
+    else
+        pol_nrz=[pol_nrz ((-1)*ones(1,n))];
+    end
+end
+
+%----------------------------POLAR RZ-----------------------------------%
+for i=1:l
+    if (m(i)==1)
+        pol_rz=[pol_rz ones(1,n/2)];
+        pol_rz=[pol_rz zeros(1,n/2)];
+    else
+        pol_rz=[pol_rz ((-1)*ones(1,n/2))];
+        pol_rz=[pol_rz zeros(1,n/2)];
+    end
+end
+%----------------------------MANCHESTER-------------------------------%
+for i=1:l
+    if (m(i)==1)
+        man=[man ones(1,n/2)];
+        man=[man ((-1)*ones(1,n/2))];
+    else
+        man=[man ((-1)*ones(1,n/2))];
+        man=[man ones(1,n/2)];
+    end
+end
+%----------------------------BIPOLAR-------------------------------%
+k=1;
+for i=1:l
+    if (m(i)==0)
+        bi_pol=[bi_pol zeros(1,n)];
+    elseif(k==1)
+        bi_pol=[bi_pol ones(1,n)];
+        k=k+1;
+    elseif(k==2)
+        bi_pol=[bi_pol ((-1)*ones(1,n))];
+        k=1;
+    end
+end
+
+
+
